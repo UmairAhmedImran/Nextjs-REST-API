@@ -14,7 +14,10 @@ export const PATCH = async (request: Request, context: { params: any }) => {
     const userId = searchParams.get("userId");
 
     if (!userId || !Types.ObjectId.isValid(userId)) {
-      return new NextResponse("Invalid or missing User ID", { status: 400 });
+      return new NextResponse(
+        JSON.stringify({ message: "Invalid or missing User ID" }),
+        { status: 400 }
+      );
     }
 
     if (!categoryId || !Types.ObjectId.isValid(categoryId)) {
@@ -62,7 +65,10 @@ export const DELETE = async (request: Request, context: { params: any }) => {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
     if (!userId || !Types.ObjectId.isValid(userId)) {
-      return new NextResponse("Invalid or missing User ID", { status: 400 });
+      return new NextResponse(
+        JSON.stringify({ message: "Invalid or missing User ID" }),
+        { status: 400 }
+      );
     }
     if (!categoryId || !Types.ObjectId.isValid(categoryId)) {
       return new NextResponse("Invalid or missing Category ID", {
