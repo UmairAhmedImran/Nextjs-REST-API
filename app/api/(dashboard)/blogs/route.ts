@@ -11,6 +11,8 @@ export const GET = async (request: Request) => {
     const userId = searchParams.get("userId");
     const categoryId = searchParams.get("categoryId");
     const searchKeywords = searchParams.get("keywords") as string;
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
 
     if (!userId || !Types.ObjectId.isValid(userId)) {
       return new NextResponse(
@@ -64,9 +66,23 @@ export const GET = async (request: Request) => {
         },
       ];
     }
-    // TODO
 
-    const blogs = await Blog.find(filter);
+    if (startDate && endDate) {
+      filter.createdAt = {
+        $gte: new Date(startDate), // gte is greater than equals to
+        $lte: new Date(endDate), // lte is less than equals to
+      };
+    } else if (startDate) {
+      filter.createdAt = {
+        $gte: new Date(startDate),
+      };
+    } else if (endDate) {
+      filter.createdAt = {
+        $lte: new Date(endDate),
+      };
+    }
+
+    const blogs = await Blog.find(filter).sort({ createdAt: "asc" });
     return new NextResponse(JSON.stringify({ blogs }), { status: 200 });
   } catch (error: any) {
     return new NextResponse("Error in fetching blog" + error.message, {
