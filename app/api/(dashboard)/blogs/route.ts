@@ -10,6 +10,7 @@ export const GET = async (request: Request) => {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
     const categoryId = searchParams.get("categoryId");
+    const searchKeywords = searchParams.get("keywords") as string;
 
     if (!userId || !Types.ObjectId.isValid(userId)) {
       return new NextResponse(
@@ -53,6 +54,16 @@ export const GET = async (request: Request) => {
       category: new Types.ObjectId(categoryId),
     };
 
+    if (searchKeywords) {
+      filter.$or = [
+        {
+          title: { $regex: searchKeywords, $options: "i" }, // i means case insensitive
+        },
+        {
+          description: { $regex: searchKeywords, $options: "i" },
+        },
+      ];
+    }
     // TODO
 
     const blogs = await Blog.find(filter);
